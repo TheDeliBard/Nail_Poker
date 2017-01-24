@@ -56,7 +56,7 @@ class pokerCard {
  }
 class pokerHand{
     private ArrayList<pokerCard> hand;
-
+    // add cards to hand
     public pokerHand(pokerDeck d)
     {
         hand=new ArrayList<pokerCard>();

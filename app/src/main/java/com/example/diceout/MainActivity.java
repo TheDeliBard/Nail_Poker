@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
     // make array list for them
     ArrayList<ImageView> cardImageViews;
+    ArrayList<ImageView> tableHandImageViews;
 
     @Override
     // activates when activity runs
@@ -194,13 +195,25 @@ public class MainActivity extends AppCompatActivity {
         ImageView card2Image = (ImageView)findViewById(R.id.card2Image);
         //ImageView die3Image = (ImageView)findViewById(R.id.die3Image);
 
+        ImageView tableHand1Image = (ImageView)findViewById(R.id.tableHand1Image);
+        ImageView tableHand2Image = (ImageView)findViewById(R.id.tableHand2Image);
+        ImageView tableHand3Image = (ImageView)findViewById(R.id.tableHand3Image);
+        ImageView tableHand4Image = (ImageView)findViewById(R.id.tableHand4Image);
+        ImageView tableHand5Image = (ImageView)findViewById(R.id.tableHand5Image);
+
         cardImageViews = new ArrayList<ImageView>();
         cardImageViews.add(card1Image);
         cardImageViews.add(card2Image);
         //diceImageViews.add(die3Image);
+        tableHandImageViews = new ArrayList<ImageView>();
+        tableHandImageViews.add(tableHand1Image);
+        tableHandImageViews.add(tableHand2Image);
+        tableHandImageViews.add(tableHand3Image);
+        tableHandImageViews.add(tableHand4Image);
+        tableHandImageViews.add(tableHand5Image);
 
         // create greeting
-        Toast.makeText(getApplicationContext(),"Welcome to DiceOut!",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(),"Welcome to Nail Poker!",Toast.LENGTH_SHORT).show();
 
         /// poker stuff here
         masterDeck=new pokerDeck();

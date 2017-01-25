@@ -15,25 +15,6 @@
     android:background="@android:color/holo_green_dark">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/letsPlay"
-        android:id="@+id/rollResult"
-        android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textColor="@android:color/white"
-        android:textSize="14sp" />
-
-    <ImageView
-        android:layout_width="150dp"
-        android:layout_height="200dp"
-        android:id="@+id/card1Image"
-        android:layout_below="@id/rollResult"
-        android:layout_marginTop="25dp"
-        android:layout_alignParentLeft="true"
-        android:src="@drawable/d"
-        />
-
-    <TextView
         android:id="@+id/scoreText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -57,38 +38,106 @@
         tools:elevation="9dp" />
 
     <ImageView
-        android:layout_width="150dp"
-        android:layout_height="200dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/card1Image"
+        android:src="@drawable/d"
+        android:layout_marginBottom="13dp"
+        android:layout_above="@+id/resetButton"
+        android:layout_toRightOf="@+id/resetButton"
+        android:layout_toEndOf="@+id/resetButton" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:id="@+id/card2Image"
         android:src="@drawable/d"
         android:layout_alignTop="@+id/card1Image"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="15dp"
-        android:layout_marginEnd="15dp" />
+        android:layout_toRightOf="@+id/scoreText"
+        android:layout_toEndOf="@+id/scoreText"
+        android:layout_marginLeft="22dp"
+        android:layout_marginStart="22dp" />
 
     <TextView
         android:id="@+id/card1Text"
         android:text="A"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/card1Image"
-        android:layout_marginBottom="75dp"
-        android:layout_marginLeft="58dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="78dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         android:textStyle="normal|bold"
-        android:textColor="@android:color/white" />
+        android:textColor="@android:color/white"
+        android:layout_alignBottom="@+id/card1Image" />
+
     <TextView
         android:id="@+id/card2Text"
         android:text="A"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/card2Image"
-        android:layout_alignLeft="@+id/card2Image"
-        android:layout_marginBottom="75dp"
-        android:layout_marginLeft="58dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         android:textStyle="normal|bold"
-        android:textColor="@android:color/white" />
+        android:textColor="@android:color/white"
+        android:layout_above="@+id/scoreText"
+        android:layout_alignRight="@+id/card2Image"
+        android:layout_alignBottom="@+id/card2Image"
+        android:layout_marginRight="28dp"
+        android:layout_marginBottom="20dp" />
 
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/letsPlay"
+        android:id="@+id/rollResult"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/tableHand1Image"
+        android:src="@drawable/cardback"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/tableHand3Image"
+        android:src="@drawable/cardback"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/tableHand2Image"
+        android:src="@drawable/cardback"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/tableHand4Image"
+        android:src="@drawable/cardback"
+        android:layout_marginTop="12dp"
+        android:layout_below="@+id/tableHand1Image"
+        android:layout_alignLeft="@+id/card1Image"
+        android:layout_alignStart="@+id/card1Image" />
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/tableHand5Image"
+        android:layout_marginTop="12dp"
+        android:layout_below="@+id/tableHand1Image"
+        android:layout_alignLeft="@+id/card2Image"
+        android:layout_alignStart="@+id/card2Image"
+        android:src="@drawable/cardback"/>
 </RelativeLayout>

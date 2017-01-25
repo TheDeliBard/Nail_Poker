@@ -282,6 +282,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public int simpleAdd(int x, int y){
+        return(x+y);
+    }
     // deal cards to table
     public void getTableHand()
     {

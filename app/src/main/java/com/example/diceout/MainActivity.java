@@ -54,6 +54,30 @@ class pokerCard {
         return(valStr[val-2]+suitStr[suit-1]);
     }
  }
+class tableHand{
+    private ArrayList<pokerCard> hand;
+    // add cards to hand
+    // this hand holds the 5 cards on the table
+    public tableHand(pokerDeck d)
+    {
+        hand=new ArrayList<pokerCard>();
+        hand.add(d.getCard());
+        hand.add(d.getCard());
+        hand.add(d.getCard());
+        hand.add(d.getCard());
+        hand.add(d.getCard());
+    }
+
+    public ArrayList<pokerCard> getHand() {
+        return hand;
+    }
+
+    public String toString()
+    {
+        return(hand.get(0).toString()+" "+hand.get(1).toString()+" "+hand.get(2).toString()+" "+hand.get(3).toString()+" "+hand.get(4).toString());
+    }
+}
+
 class pokerHand{
     private ArrayList<pokerCard> hand;
     // add cards to hand
@@ -116,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
 
     // poker hands, indices are players
     ArrayList<pokerHand> handList;
+    ArrayList<tableHand> tableHandList;
 
     //number of players
     int numPlayers;
@@ -125,6 +150,11 @@ public class MainActivity extends AppCompatActivity {
     TextView scoreText;
     TextView card1Text;
     TextView card2Text;
+    TextView tableHand1Text;;
+    TextView tableHand2Text;;
+    TextView tableHand3Text;;
+    TextView tableHand4Text;;
+    TextView tableHand5Text;
 
     //field for reset button
     Button resetButton;
@@ -205,6 +235,8 @@ public class MainActivity extends AppCompatActivity {
         cardImageViews.add(card1Image);
         cardImageViews.add(card2Image);
         //diceImageViews.add(die3Image);
+
+        // initialize table hand cards
         tableHandImageViews = new ArrayList<ImageView>();
         tableHandImageViews.add(tableHand1Image);
         tableHandImageViews.add(tableHand2Image);
@@ -221,8 +253,15 @@ public class MainActivity extends AppCompatActivity {
 
         card1Text = (TextView)findViewById(R.id.card1Text);
         card2Text = (TextView)findViewById(R.id.card2Text);
+        tableHand1Text = (TextView)findViewById(R.id.tableHand1Text);
+        tableHand2Text = (TextView)findViewById(R.id.tableHand2Text);
+        tableHand3Text = (TextView)findViewById(R.id.tableHand3Text);
+        tableHand4Text = (TextView)findViewById(R.id.tableHand4Text);
+        tableHand5Text = (TextView)findViewById(R.id.tableHand5Text);
+
 
         handList = new ArrayList<pokerHand>();
+        tableHandList = new ArrayList<tableHand>();
 
         // set number of players
         numPlayers = 1;
@@ -230,6 +269,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // deal cards to players
     public void getHands()
     {
         // for each player, create a new hand
@@ -242,6 +282,88 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // deal cards to table
+    public void getTableHand()
+    {
+        // for each player, create a new hand
+            tableHand tmpHand=new tableHand(currentDeck);
+            tableHandList.add(tmpHand);
+
+
+    }
+
+    // display table's cards - flop
+    public void displayFlop()
+    {
+        for(int j=0;j<3;j++)
+        {
+            String tmpSuit = tableHandList.get(0).getHand().get(j).getSuitStr();
+            String tmpVal = tableHandList.get(0).getHand().get(j).getValStr();
+            String fname =  tmpSuit + ".png";
+
+            if(j==0){ tableHand1Text.setText(tmpVal); tableHand1Text.setVisibility(View.VISIBLE);}
+            else if(j==1){ tableHand2Text.setText(tmpVal); tableHand2Text.setVisibility(View.VISIBLE);}
+            else if(j==2){ tableHand3Text.setText(tmpVal); tableHand3Text.setVisibility(View.VISIBLE);}
+            try
+            {
+                InputStream stream = getAssets().open(fname);
+                Drawable d = Drawable.createFromStream(stream,null);
+                tableHandImageViews.get(j).setImageDrawable(d);
+            }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+            }
+
+        }
+    }
+    // display table's cards - turn
+    public void displayTurn()
+    {
+        for(int j=3;j<4;j++)
+        {
+            String tmpSuit = tableHandList.get(0).getHand().get(j).getSuitStr();
+            String tmpVal = tableHandList.get(0).getHand().get(j).getValStr();
+            String fname =  tmpSuit + ".png";
+
+            if(j==3){ tableHand4Text.setText(tmpVal); tableHand4Text.setVisibility(View.VISIBLE);}
+            try
+            {
+                InputStream stream = getAssets().open(fname);
+                Drawable d = Drawable.createFromStream(stream,null);
+                tableHandImageViews.get(j).setImageDrawable(d);
+            }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+            }
+
+        }
+    }
+    // display table's cards - river
+    public void displayRiver()
+    {
+        for(int j=4;j<5;j++)
+        {
+            String tmpSuit = tableHandList.get(0).getHand().get(j).getSuitStr();
+            String tmpVal = tableHandList.get(0).getHand().get(j).getValStr();
+            String fname =  tmpSuit + ".png";
+            if(j==4){ tableHand5Text.setText(tmpVal); tableHand5Text.setVisibility(View.VISIBLE);}
+
+            try
+            {
+                InputStream stream = getAssets().open(fname);
+                Drawable d = Drawable.createFromStream(stream,null);
+                tableHandImageViews.get(j).setImageDrawable(d);
+            }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+            }
+
+        }
+    }
+    // display players cards
     public void displayHand(int playerID)
     {
         for(int j=0;j<2;j++)
@@ -251,11 +373,11 @@ public class MainActivity extends AppCompatActivity {
             String fname =  tmpSuit + ".png";
             if(j==0)
             {
-                card1Text.setText(tmpVal);
+                card1Text.setText(tmpVal); card1Text.setVisibility(View.VISIBLE);
             }
             else if(j==1)
             {
-                card2Text.setText(tmpVal);
+                card2Text.setText(tmpVal); card2Text.setVisibility(View.VISIBLE);
             }
             try
             {
@@ -279,73 +401,23 @@ public class MainActivity extends AppCompatActivity {
 
         // clear the player hands
         handList.clear();
+        tableHandList.clear();
     }
 
     public void rollDice(View v)
     {
-      /*  numClicks+=1;
-       rollResult.setText("Clicked "+numClicks+" Times!"); */
-
-        // 0 - 6 + 1
-        /* die1 = rand.nextInt(6)+1;
-        die2 = rand.nextInt(6)+1;
-        die3 = rand.nextInt(6)+1;
-
-        // update dice array list
-        dice.clear();
-        dice.add(die1);
-        dice.add(die2);
-        dice.add(die3); */
-
-       /* for (int dieOfSet = 0; dieOfSet < 3; dieOfSet++)
-        {
-            String fname = "die_" + dice.get(dieOfSet) + ".png";
-            try
-            {
-                InputStream stream = getAssets().open(fname);
-                Drawable d = Drawable.createFromStream(stream,null);
-                diceImageViews.get(dieOfSet).setImageDrawable(d);
-            }
-            catch(IOException e)
-            {
-                e.printStackTrace();
-            }
-        } */
-
-        // general rules
-        // 100 * value of triples
-        // 50 for doubles
         // build message
         String msg;
-     /*   scoreDelta =0;
-        if (die1 == die2 && die1 == die3)
-        {
-            // trips
-            scoreDelta = die1 * 100;
-            msg = "You rolled triple " + die1 +"'s! You score " + scoreDelta + " points!";
-        }
-        else if (die1 == die2 || die1 == die3 || die2 == die3)
-        {
-            scoreDelta = 50;
-            msg = "You rolled doubles! You score 50 points!";
-        }
-        else
-        {
-            msg = "No points, try again!";
-        }
-        */
-
-       // score = score + scoreDelta;
-       // scoreText.setText("Score: "+score);
-/*
-        String randomValue = "Number Generated: " + num;
-        Toast.makeText(getApplicationContext(),randomValue,Toast.LENGTH_SHORT).show(); */
 
 
         // poker stuff here
         // generate hands, print hand, shuffle
         getHands();
+        getTableHand();
         displayHand(0);
+        displayFlop();
+        displayTurn();
+        displayRiver();
         msg = "You were dealt: " + handList.get(0).getHand().toString();
         //update app to display result
         rollResult.setText(msg);
@@ -362,37 +434,42 @@ public class MainActivity extends AppCompatActivity {
         scoreText.setText("");
         rollResult.setText("Let's Play!");
 
-        // get initial dice state
-       /* String fname = "die_1.png";
-        try {
-            InputStream stream = getAssets().open(fname);
-
-            Drawable d = Drawable.createFromStream(stream,null);
-            // set all dice to 1
-            diceImageViews.get(0).setImageDrawable(d);
-            diceImageViews.get(1).setImageDrawable(d);
-            diceImageViews.get(2).setImageDrawable(d);
-        }
-        catch(IOException e){e.printStackTrace();} */
-
+    // reset hand
         for(int j=0;j<2;j++)
         {
             String tmpSuit = "d";
             String tmpVal = "A";
-            String fname =  tmpSuit + ".png";
-            if(j==0)
-            {
-                card1Text.setText(tmpVal);
-            }
-            else if(j==1)
-            {
-                card2Text.setText(tmpVal);
-            }
+            String fname =  "cardback.png";
+            if(j==0) { card1Text.setVisibility(View.INVISIBLE);  }
+            else if(j==1) { card2Text.setVisibility(View.INVISIBLE); }
             try
             {
                 InputStream stream = getAssets().open(fname);
                 Drawable d = Drawable.createFromStream(stream,null);
                 cardImageViews.get(j).setImageDrawable(d);
+            }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+            }
+
+        }
+
+        // reset table
+        for(int j=0;j<5;j++)
+        {
+            String fname =  "cardback.png";
+
+            if(j==0){ tableHand1Text.setVisibility(View.INVISIBLE);}
+            else if(j==1){  tableHand2Text.setVisibility(View.INVISIBLE);}
+            else if(j==2){ tableHand3Text.setVisibility(View.INVISIBLE);}
+            else if(j==3){tableHand4Text.setVisibility(View.INVISIBLE);}
+            else if(j==4){ tableHand5Text.setVisibility(View.INVISIBLE);}
+            try
+            {
+                InputStream stream = getAssets().open(fname);
+                Drawable d = Drawable.createFromStream(stream,null);
+                tableHandImageViews.get(j).setImageDrawable(d);
             }
             catch(IOException e)
             {

@@ -17,7 +17,9 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
 class pokerCard {
@@ -145,10 +147,13 @@ class pokerDeck{
 class player{
     private pokerHand playerHand;
     private int handClass;
+    private ArrayList<int[]> subsets;
+
     public player(){
         // for each player, create a new hand
             //playerHand=new pokerHand(d);
             handClass = 0;
+            subsets= new ArrayList<int[]>();
     }
     public void dealCards(pokerDeck d){
         playerHand = new pokerHand(d);
@@ -163,20 +168,105 @@ class player{
     {
         int[][] scoreArray=new int[13][4];
 
+        ArrayList<pokerCard> totalCards = new ArrayList<pokerCard>();
+        //add players cards to total hand
+        totalCards.add(this.playerHand.getHand().get(0));
+        totalCards.add(this.playerHand.getHand().get(0));
+        // add table cards to total hand
+        totalCards.add(tHand.getHand().get(0));
+        totalCards.add(tHand.getHand().get(1));
+        totalCards.add(tHand.getHand().get(2));
+        totalCards.add(tHand.getHand().get(3));
+        totalCards.add(tHand.getHand().get(4));
+
         if(tableState==0){
             // pre flop
         }
         else if(tableState==1){
             // flop
+            int[] input={1,2,3,4,5};
+            int k = 5;
+            int n=input.length;
+
+            getSubsetIndices(input,k);
         }
         else if(tableState==2){
             // turn
+            int[] input={1,2,3,4,5,6};
+            int k = 5;
+            int n=input.length;
+
+            getSubsetIndices(input,k);
         }
         else if(tableState==3){
             // river
+            int[] input={1,2,3,4,5,6,7};
+            int k = 5;
+            int n=input.length;
+
+            getSubsetIndices(input,k);
+
+            //-------------------------------
+        }
+        // as a test print out subsets
+        for(int i=0;i<subsets.size();i++){
+            for(int j=0;j<subsets.get(i).length;j++){
+                System.out.print(subsets.get(i)[j]+" ");
+            }
+            System.out.println("");
+        }
+
+        subsets.clear();
+    }
+    public void getSubsetIndices(int[] input,int k){
+        int[] s = new int[k];
+        if (k <= input.length) {
+
+            for(int i=0;i<k;i++){
+                s[i]=i;
+            }
+
+            // first index sequence: 0, 1, 2, ...
+            // for loop, sets s array to 0 to k-1
+            for (int i = 0; (s[i] = i) < k - 1; i++);
+            // get the actual values from input since we are tracking indices
+            subsets.add(getSubset(input, s));
+
+            while(true) {
+                int i;
+                // find position of item that can be incremented
+                // initially i = last position in new array
+                // if the last position == full array -1 (last indice) then move to next lower index
+                // if we run out of indices, we are done totally. break the while loop
+                for (i = k - 1; i >= 0 && s[i] == input.length - k + i; i--);
+
+                if (i < 0) {
+                    break;
+                }
+                else {
+                    // increment last position possible
+                    s[i]++;
+                    // fill up the following indices in an incremental fashion
+                    // we pre increment initially so it fails if we are already at the last position
+                    for (++i; i < k; i++) {
+                        s[i] = s[i - 1] + 1;
+                    }
+                    // get the actual subset, we are working with indices here
+                    subsets.add(getSubset(input, s));
+                }
+            }
         }
     }
+    // generate actual subset by index sequence
+    int[] getSubset(int[] input, int[] subset) {
+        int[] result = new int[subset.length];
+        for (int i = 0; i < subset.length; i++)
+            result[i] = input[subset[i]];
+        return result;
+    }
+
 }
+
 
 public class MainActivity extends AppCompatActivity {
 

@@ -61,17 +61,25 @@ class tableHand{
     public tableHand(pokerDeck d)
     {
         hand=new ArrayList<pokerCard>();
+        // burn card
+        pokerCard burn1=d.getCard();
         hand.add(d.getCard());
         hand.add(d.getCard());
         hand.add(d.getCard());
+        // burn card
+        pokerCard burn2=d.getCard();
         hand.add(d.getCard());
+        //burn card
+        pokerCard burn3=d.getCard();
         hand.add(d.getCard());
     }
 
     public ArrayList<pokerCard> getHand() {
         return hand;
     }
-
+    public void clearHand(){
+        hand.clear();
+    }
     public String toString()
     {
         return(hand.get(0).toString()+" "+hand.get(1).toString()+" "+hand.get(2).toString()+" "+hand.get(3).toString()+" "+hand.get(4).toString());
@@ -91,7 +99,9 @@ class pokerHand{
     public ArrayList<pokerCard> getHand() {
         return hand;
     }
-
+    public void clearHand(){
+        hand.clear();
+    }
     public String toString()
     {
         return(hand.get(0).toString()+" "+hand.get(1).toString());
@@ -132,6 +142,42 @@ class pokerDeck{
     }
 }
 
+class player{
+    private pokerHand playerHand;
+    private int handClass;
+    public player(){
+        // for each player, create a new hand
+            //playerHand=new pokerHand(d);
+            handClass = 0;
+    }
+    public void dealCards(pokerDeck d){
+        playerHand = new pokerHand(d);
+    }
+    public pokerHand getPlayerHand() {
+        return playerHand;
+    }
+    public void clearHand(){
+        playerHand.clearHand();
+    }
+    public void evaluateHand(tableHand tHand, int tableState)
+    {
+        int[][] scoreArray=new int[13][4];
+
+        if(tableState==0){
+            // pre flop
+        }
+        else if(tableState==1){
+            // flop
+        }
+        else if(tableState==2){
+            // turn
+        }
+        else if(tableState==3){
+            // river
+        }
+    }
+}
+
 public class MainActivity extends AppCompatActivity {
 
     //poker decks
@@ -139,9 +185,11 @@ public class MainActivity extends AppCompatActivity {
     pokerDeck currentDeck;
 
     // poker hands, indices are players
-    ArrayList<pokerHand> handList;
-    ArrayList<tableHand> tableHandList;
+   // ArrayList<pokerHand> handList;
+   // ArrayList<tableHand> tableHandList;
+    tableHand tablesHand;
 
+    ArrayList<player> playerList;
     //number of players
     int numPlayers;
 
@@ -260,26 +308,36 @@ public class MainActivity extends AppCompatActivity {
         tableHand5Text = (TextView)findViewById(R.id.tableHand5Text);
 
 
-        handList = new ArrayList<pokerHand>();
-        tableHandList = new ArrayList<tableHand>();
+        //handList = new ArrayList<pokerHand>();
+        //tableHandList = new ArrayList<tableHand>();
 
         // set number of players
         numPlayers = 1;
 
+        // create players and add them to a list
+        playerList= new ArrayList<player>();
+        for(int i=0;i<numPlayers;i++){
+            player p = new player();
+            playerList.add(p);
+        }
 
     }
 
     // deal cards to players
     public void getHands()
     {
+        // old method to deal cards. will be removed.
+
+        /*
         // for each player, create a new hand
+
         for(int i=0; i<numPlayers;i++)
         {
             pokerHand tmpHand=new pokerHand(currentDeck);
             handList.add(tmpHand);
 
         }
-
+*/
     }
 
     public int simpleAdd(int x, int y){
@@ -289,8 +347,8 @@ public class MainActivity extends AppCompatActivity {
     public void getTableHand()
     {
         // for each player, create a new hand
-            tableHand tmpHand=new tableHand(currentDeck);
-            tableHandList.add(tmpHand);
+            tablesHand=new tableHand(currentDeck);
+          //  tableHandList.add(tmpHand);
 
 
     }
@@ -300,8 +358,8 @@ public class MainActivity extends AppCompatActivity {
     {
         for(int j=0;j<3;j++)
         {
-            String tmpSuit = tableHandList.get(0).getHand().get(j).getSuitStr();
-            String tmpVal = tableHandList.get(0).getHand().get(j).getValStr();
+            String tmpSuit = tablesHand.getHand().get(j).getSuitStr();
+            String tmpVal = tablesHand.getHand().get(j).getValStr();
             String fname =  tmpSuit + ".png";
 
             if(j==0){ tableHand1Text.setText(tmpVal); tableHand1Text.setVisibility(View.VISIBLE);}
@@ -325,8 +383,8 @@ public class MainActivity extends AppCompatActivity {
     {
         for(int j=3;j<4;j++)
         {
-            String tmpSuit = tableHandList.get(0).getHand().get(j).getSuitStr();
-            String tmpVal = tableHandList.get(0).getHand().get(j).getValStr();
+            String tmpSuit = tablesHand.getHand().get(j).getSuitStr();
+            String tmpVal = tablesHand.getHand().get(j).getValStr();
             String fname =  tmpSuit + ".png";
 
             if(j==3){ tableHand4Text.setText(tmpVal); tableHand4Text.setVisibility(View.VISIBLE);}
@@ -348,8 +406,8 @@ public class MainActivity extends AppCompatActivity {
     {
         for(int j=4;j<5;j++)
         {
-            String tmpSuit = tableHandList.get(0).getHand().get(j).getSuitStr();
-            String tmpVal = tableHandList.get(0).getHand().get(j).getValStr();
+            String tmpSuit = tablesHand.getHand().get(j).getSuitStr();
+            String tmpVal = tablesHand.getHand().get(j).getValStr();
             String fname =  tmpSuit + ".png";
             if(j==4){ tableHand5Text.setText(tmpVal); tableHand5Text.setVisibility(View.VISIBLE);}
 
@@ -371,8 +429,8 @@ public class MainActivity extends AppCompatActivity {
     {
         for(int j=0;j<2;j++)
         {
-            String tmpSuit = handList.get(playerID).getHand().get(j).getSuitStr();
-            String tmpVal = handList.get(playerID).getHand().get(j).getValStr();
+            String tmpSuit = playerList.get(playerID).getPlayerHand().getHand().get(j).getSuitStr();
+            String tmpVal = playerList.get(playerID).getPlayerHand().getHand().get(j).getValStr();
             String fname =  tmpSuit + ".png";
             if(j==0)
             {
@@ -403,8 +461,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         // clear the player hands
-        handList.clear();
-        tableHandList.clear();
+        for(int i=0;i<numPlayers;i++){
+           playerList.get(i).clearHand();
+            tablesHand.clearHand();
+
+        }
     }
 
     public void rollDice(View v)
@@ -415,16 +476,34 @@ public class MainActivity extends AppCompatActivity {
 
         // poker stuff here
         // generate hands, print hand, shuffle
-        getHands();
+       // getHands();
         getTableHand();
+        for(int i=0;i<numPlayers;i++){
+            playerList.get(i).dealCards(currentDeck);
+        }
+
+        //pre flop
         displayHand(0);
-        displayFlop();
-        displayTurn();
-        displayRiver();
-        msg = "You were dealt: " + handList.get(0).getHand().toString();
+
+        msg = "You were dealt: " + playerList.get(0).getPlayerHand().toString();
         //update app to display result
         rollResult.setText(msg);
-       // scoreText.setText(handList.get(0).toString());
+        // scoreText.setText(handList.get(0).toString());
+
+        playerList.get(0).evaluateHand(tablesHand,0);
+        //flop
+        displayFlop();
+        playerList.get(0).evaluateHand(tablesHand,1);
+
+        //turn
+        displayTurn();
+        playerList.get(0).evaluateHand(tablesHand,2);
+
+        //river
+        displayRiver();
+        playerList.get(0).evaluateHand(tablesHand,3);
+
+
 
         shuffleDeck();
 

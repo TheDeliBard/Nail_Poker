@@ -188,7 +188,7 @@ class player{
         }
         else if(tableState==1){
             // flop
-            int[] input={1,2,3,4,5};
+            int[] input={0,1,2,3,4};
             int k = 5;
             int n=input.length;
 
@@ -196,7 +196,7 @@ class player{
         }
         else if(tableState==2){
             // turn
-            int[] input={1,2,3,4,5,6};
+            int[] input={0,1,2,3,4,5};
             int k = 5;
             int n=input.length;
 

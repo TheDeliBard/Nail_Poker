@@ -37,4 +37,35 @@ public class ExampleUnitTest {
         tmpCard.setSuit(1);
         assertEquals(tmpCard.getSuitStr(),"c");
     }
+    @Test
+    public void evaluateHandSumColTest(){
+        player p=new player();
+        int[][] tmp = new int[13][4];
+        tmp[0][0]=1;
+        tmp[0][1]=1;
+        tmp[0][2]=1;
+        tmp[0][3]=1;
+        int[] tmpres = {1,1,1,1};
+        assertArrayEquals(p.sumCol(tmp),tmpres);
+    }
+    @Test
+    public void evaluateHandSumRowTest(){
+        player p=new player();
+        int[][] tmp = new int[13][4];
+        tmp[0][0]=1;
+        tmp[1][0]=1;
+        tmp[2][0]=1;
+        tmp[3][0]=1;
+        tmp[4][0]=1;
+        tmp[5][0]=1;
+        tmp[6][0]=1;
+        tmp[7][0]=1;
+        tmp[8][0]=1;
+        tmp[9][0]=1;
+        tmp[10][0]=1;
+        tmp[11][0]=1;
+        tmp[12][0]=1;
+        int[] tmpres = {1,1,1,1,1,1,1,1,1,1,1,1,1};
+        assertArrayEquals(p.sumRow(tmp),tmpres);
+    }
 }

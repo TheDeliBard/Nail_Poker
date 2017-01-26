@@ -147,13 +147,18 @@ class pokerDeck{
 class player{
     private pokerHand playerHand;
     private int handClass;
+    private String[] handClassStr={"Straight Flush","4 of a Kind","Full House","Flush","Straight","3 of a Kind","Two Pair","Pair","High Card"};
     private ArrayList<int[]> subsets;
-
     public player(){
         // for each player, create a new hand
             //playerHand=new pokerHand(d);
             handClass = 0;
             subsets= new ArrayList<int[]>();
+    }
+    public String getHandClassStr()
+    {
+        // the class str list is backwards. subtract from 9 for now
+        return(handClassStr[9-handClass]);
     }
     public void dealCards(pokerDeck d){
         playerHand = new pokerHand(d);
@@ -163,15 +168,14 @@ class player{
     }
     public void clearHand(){
         playerHand.clearHand();
+        handClass=0;
     }
     public void evaluateHand(tableHand tHand, int tableState)
     {
-        int[][] scoreArray=new int[13][4];
-
         ArrayList<pokerCard> totalCards = new ArrayList<pokerCard>();
         //add players cards to total hand
         totalCards.add(this.playerHand.getHand().get(0));
-        totalCards.add(this.playerHand.getHand().get(0));
+        totalCards.add(this.playerHand.getHand().get(1));
         // add table cards to total hand
         totalCards.add(tHand.getHand().get(0));
         totalCards.add(tHand.getHand().get(1));
@@ -200,7 +204,7 @@ class player{
         }
         else if(tableState==3){
             // river
-            int[] input={1,2,3,4,5,6,7};
+            int[] input={0,1,2,3,4,5,6};
             int k = 5;
             int n=input.length;
 
@@ -208,16 +212,193 @@ class player{
 
             //-------------------------------
         }
-        // as a test print out subsets
-        for(int i=0;i<subsets.size();i++){
-            for(int j=0;j<subsets.get(i).length;j++){
-                System.out.print(subsets.get(i)[j]+" ");
-            }
-            System.out.println("");
-        }
 
+        // Now that we have a list of possible hand subsets we can go into
+        // the actual card values and find the base class of the hand
+        // handClass == 1 == High Card
+        // handClass == 2 == Pair
+        // handClass == 3 == 2 Pair
+        // handClass == 4 == 3 of a kind
+        // handClass == 5 == Straight
+        // handClass == 6 == Flush
+        // handClass == 7 == Full House
+        // handClass == 8 == 4 of a kind
+        // handClass == 9 == Straight Flush
+
+        int[][] scoreArray=new int[13][4];
+        for(int i=0;i<subsets.size();i++){
+            int[] ind=subsets.get(i);
+            for(int j=0;j<5;j++){
+                // values are offset by 2 to initially make more mental sense
+                // i.e. value == 2 == "2 card", value == 14 == ace
+                // suits are 1-4, so decrement by 1
+                int tmpVal = totalCards.get(ind[j]).getVal()-2;
+                int tmpSuit= totalCards.get(ind[j]).getSuit()-1;
+                scoreArray[tmpVal][tmpSuit]=1;
+            }
+            int[] colScore = new int[4];
+            int[] rowScore = new int[13];
+
+            colScore = sumCol(scoreArray);
+            rowScore = sumRow(scoreArray);
+            boolean isFlush = checkFlush(colScore);
+            boolean isStraight = checkStraight(rowScore);
+            boolean is4OfKind = check4OfKind(rowScore);
+            boolean is3OfKind = check3OfKind(rowScore);
+            boolean isFullHouse = checkFullHouse(rowScore);
+            boolean is2Pair = check2Pair(rowScore);
+            boolean isPair = checkPair(rowScore);
+            int newhandClass=0;
+            if(isFlush==true && isStraight==true)
+                newhandClass=9;
+            else if(is4OfKind==true)
+                newhandClass=8;
+            else if(isFullHouse==true)
+                newhandClass=7;
+            else if(isFlush == true)
+                newhandClass=6;
+            else if(isStraight==true)
+                newhandClass=5;
+            else if(is3OfKind==true)
+                newhandClass=4;
+            else if(is2Pair==true)
+                newhandClass=3;
+            else if(isPair==true)
+                newhandClass=2;
+            else
+                newhandClass=1;
+
+            // if this subset is the best hand, set it to be the hand class
+            if(newhandClass>handClass) {
+                handClass = newhandClass;
+                //NEED TO ADD REFERENCE TO ACTUAL HAND HERE
+            }
+        }
         subsets.clear();
     }
+    // check for a flush draw
+    public boolean checkFlush(int[] colScore){
+        boolean res = false;
+        for(int i=0; i<4;i++){
+            if(colScore[i]==5){
+                res=true;
+                break;
+            }
+        }
+        return(res);
+    }
+    // check for a 4 of a kind draw
+    public boolean check4OfKind(int[] rowScore){
+        boolean res = false;
+        for(int i=0; i<13;i++){
+            if(rowScore[i]==4){
+                res=true;
+                break;
+            }
+        }
+        return(res);
+    }
+    // check for a fullhouse draw
+    public boolean checkFullHouse(int[] rowScore){
+        boolean res = false;
+        boolean set = false;
+        boolean pair= false;
+        for(int i=0; i<13;i++){
+            if(rowScore[i]==3){
+                set=true;
+            }
+            else if(rowScore[i]==2){
+                pair=true;
+            }
+            if(set==true && pair==true){
+                res=true;
+                break;
+            }
+        }
+        return(res);
+    }
+    // check for a 3of a kind draw
+    public boolean check3OfKind(int[] rowScore){
+        boolean res = false;
+        for(int i=0; i<13;i++){
+            if(rowScore[i]==3){
+                res=true;
+                break;
+            }
+        }
+        return(res);
+    }
+    // check for a 2pair draw
+    public boolean check2Pair(int[] rowScore){
+        boolean res = false;
+        boolean pair1= false;
+        boolean pair2= false;
+        for(int i=0; i<13;i++){
+            if(rowScore[i]==2){
+                if(pair1==false){
+                    pair1=true;
+                }
+                else{
+                    pair2=true;
+                }
+            }
+            if(pair1==true && pair2==true){
+                res=true;
+                break;
+            }
+        }
+        return(res);
+    }
+    // check for a pair draw
+    public boolean checkPair(int[] rowScore){
+        boolean res = false;
+        for(int i=0; i<13;i++){
+            if(rowScore[i]==2){
+                res=true;
+                break;
+            }
+        }
+        return(res);
+    }
+    // check for a straight draw
+    public boolean checkStraight(int[] rowScore){
+        boolean res = false;
+        for(int i=0; i<9;i++){
+            if (rowScore[i]>0 && rowScore[i+1]>0 && rowScore[i+2]>0 && rowScore[i+3]>0 && rowScore[i+4]>0) {
+                res=true;
+                break;
+            }
+        }
+        // special case, low ace straight
+        if(rowScore[12]>0 && rowScore[0]>0 && rowScore[1]>0 && rowScore[2]>0 && rowScore[3]>0){
+            res=true;
+        }
+        return(res);
+    }
+
+    // function to sum the columns of score array
+    public int[] sumCol(int[][] input){
+        int[] res = new int[4];
+        for(int i=0;i<4;i++){
+            for(int j=0;j<13;j++){
+                res[i]=res[i]+input[j][i];
+            }
+        }
+
+        return(res);
+    }
+    // function to sum the rows of score array
+    public int[] sumRow(int[][] input){
+        int[] res = new int[13];
+        for(int i=0;i<13;i++){
+            for(int j=0;j<4;j++){
+                res[i]=res[i]+input[i][j];
+            }
+        }
+
+        return(res);
+    }
+
     public void getSubsetIndices(int[] input,int k){
         int[] s = new int[k];
         if (k <= input.length) {
@@ -575,25 +756,25 @@ public class MainActivity extends AppCompatActivity {
         //pre flop
         displayHand(0);
 
-        msg = "You were dealt: " + playerList.get(0).getPlayerHand().toString();
-        //update app to display result
-        rollResult.setText(msg);
         // scoreText.setText(handList.get(0).toString());
 
-        playerList.get(0).evaluateHand(tablesHand,0);
+      //  playerList.get(0).evaluateHand(tablesHand,0);
         //flop
         displayFlop();
-        playerList.get(0).evaluateHand(tablesHand,1);
+      //  playerList.get(0).evaluateHand(tablesHand,1);
 
         //turn
         displayTurn();
-        playerList.get(0).evaluateHand(tablesHand,2);
+       // playerList.get(0).evaluateHand(tablesHand,2);
 
         //river
         displayRiver();
         playerList.get(0).evaluateHand(tablesHand,3);
 
 
+        msg = "Your best hand is a : " + playerList.get(0).getHandClassStr();
+        //update app to display result
+        rollResult.setText(msg);
 
         shuffleDeck();
 

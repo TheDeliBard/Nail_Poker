@@ -1,4 +1,4 @@
-package com.example.diceout;
+package com.example.nailPoker;
 
 import org.junit.Test;
 

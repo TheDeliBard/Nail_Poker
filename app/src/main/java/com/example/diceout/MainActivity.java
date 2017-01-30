@@ -22,15 +22,21 @@ import java.util.Random;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
+/*
+      basic class for a poker card
+      value is 2-14 (14=ace, 13=king, 12=queen, 11=jack
+      suit values are set as clubs==1, spades==2, hearts==3, diamonds==4
+      when acessing the values later, card value needs to be reduced by 2
+      since java addressing starts at 0. Suit value should be reduced by1
+      is stored primarily in array lists located in pokerHand and tableHand
+ */
 class pokerCard {
-     // basic class for a poker card
-     // value is 2-14 (14=ace, 13=king, 12=queen, 11=jack
-     private int val;
-     private int suit;
+    private int val;
+    private int suit;
     String[] valStr  = {"2","3","4","5","6","7","8","9","10","J","Q","K","A"};
     String[] suitStr = {"c","s","h","d"};
 
-     public int getSuit() {
+    public int getSuit() {
          return suit;
      }
 
@@ -40,24 +46,33 @@ class pokerCard {
     public String getValStr() {
         return(valStr[val-2]);
     }
-     public int getVal() {
+    public int getVal() {
          return val;
      }
 
-     public void setSuit(int suit) {
+    public void setSuit(int suit) {
          this.suit = suit;
      }
-
-     public void setVal(int val) {
+    public void setVal(int val) {
          this.val = val;
      }
+
     public String toString()
     {
         return(valStr[val-2]+suitStr[suit-1]);
     }
  }
+
+/*
+    tableHands represents the 5 neutral cards on a texas holdem table
+    the 5 cards are stored in an array list
+    when created, the cards are dealt using standard poker form, "burning" a card
+    between deals
+
+ */
 class tableHand{
     private ArrayList<pokerCard> hand;
+
     // add cards to hand
     // this hand holds the 5 cards on the table
     public tableHand(pokerDeck d)
@@ -79,15 +94,23 @@ class tableHand{
     public ArrayList<pokerCard> getHand() {
         return hand;
     }
+
+    // clear hand array when finished
     public void clearHand(){
         hand.clear();
     }
+
+    // simple string printing, probably not actively used besides debugging
     public String toString()
     {
         return(hand.get(0).toString()+" "+hand.get(1).toString()+" "+hand.get(2).toString()+" "+hand.get(3).toString()+" "+hand.get(4).toString());
     }
 }
 
+/*
+    pokerHand refers to the 2 card hand available to a player
+    the two cards are stored in an array list
+ */
 class pokerHand{
     private ArrayList<pokerCard> hand;
     // add cards to hand
@@ -101,15 +124,25 @@ class pokerHand{
     public ArrayList<pokerCard> getHand() {
         return hand;
     }
+
+    // clear array list when finished with a hand
     public void clearHand(){
         hand.clear();
     }
+
+    // simple to string for debugging purposes
     public String toString()
     {
         return(hand.get(0).toString()+" "+hand.get(1).toString());
     }
 }
 
+/*
+    pokerDeck refers to the total set of cards before/during dealing
+    initially 52, the deck is passed as a variable to pokerHand and tableHand constructors
+    which proceed to remove entries when "dealing" or "burning" a card
+    the deck itself is initially a 52 entry array list
+ */
 class pokerDeck{
     private ArrayList<pokerCard> deck;
     public pokerDeck()
@@ -128,6 +161,7 @@ class pokerDeck{
         }
     }
 
+    //returns card when requested and removes it from the deck
     public pokerCard getCard()
     {
         // get length of deck and generate random int
@@ -144,6 +178,17 @@ class pokerDeck{
     }
 }
 
+/*
+    The player class holds information for a given user
+    They have a playerHand, 2 cards which is the pokerHand type above
+    Currently only decoding the "class" of hand is implemented, we can tell what type of
+    hand it is, but not the exact value. That is next on the to do list
+
+    the arraylist subsets is used to hold the various combinations of cards, basically the result
+    from an N Choose K algorithm (7 cards total, pick 5). We assign each hand a class type and
+    store the best result in handClass variable
+
+ */
 class player{
     private pokerHand playerHand;
     private int handClass;
@@ -155,21 +200,34 @@ class player{
             handClass = 0;
             subsets= new ArrayList<int[]>();
     }
+
+    // read the hand class
     public String getHandClassStr()
     {
         // the class str list is backwards. subtract from 9 for now
         return(handClassStr[9-handClass]);
     }
-    public void dealCards(pokerDeck d){
-        playerHand = new pokerHand(d);
-    }
+    // set the player's hand
+    public void dealCards(pokerDeck d){playerHand = new pokerHand(d);}
+
     public pokerHand getPlayerHand() {
         return playerHand;
     }
+
+    // clear the list when finished with a hand, reset its value to 0
     public void clearHand(){
         playerHand.clearHand();
         handClass=0;
     }
+
+    /*
+        This is the function to check what kind of hand the player has. Given 7 cards, which 5
+        represent the highest value.
+        To evaluate, we use a 13 x 4 int array (card value by suit value). Each card in a
+        possible hand combination is set to "1" in the array. This allows us to simply
+        sum across rows/columns to find results. E.g. a flush will have a column sum of "5",
+        because all 5 cards will be in that column.
+     */
     public void evaluateHand(tableHand tHand, int tableState)
     {
         ArrayList<pokerCard> totalCards = new ArrayList<pokerCard>();
@@ -183,6 +241,8 @@ class player{
         totalCards.add(tHand.getHand().get(3));
         totalCards.add(tHand.getHand().get(4));
 
+        // table state represents the state of the board
+        // it can be preflop, flop, turn, or river
         if(tableState==0){
             // pre flop
         }
@@ -249,6 +309,9 @@ class player{
             boolean is2Pair = check2Pair(rowScore);
             boolean isPair = checkPair(rowScore);
             int newhandClass=0;
+
+            // super simplified way to determine what class a hand is
+            // this will need expanded upon next with actual card values
             if(isFlush==true && isStraight==true)
                 newhandClass=9;
             else if(is4OfKind==true)
@@ -399,6 +462,10 @@ class player{
         return(res);
     }
 
+    /*
+        This function peforms a N Choose K algorithm. It adds the possible combinations
+        of cards to the list subsets
+     */
     public void getSubsetIndices(int[] input,int k){
         int[] s = new int[k];
         if (k <= input.length) {
@@ -419,6 +486,9 @@ class player{
                 // initially i = last position in new array
                 // if the last position == full array -1 (last indice) then move to next lower index
                 // if we run out of indices, we are done totally. break the while loop
+                //
+                // Had assistance from stack overflow on this one. Interesting use of a for loop
+                // that I will remember to make use of in the future
                 for (i = k - 1; i >= 0 && s[i] == input.length - k + i; i--);
 
                 if (i < 0) {
@@ -448,23 +518,25 @@ class player{
 
 }
 
-
+/*
+    Main Activity, created by android studio initially. Sets up the basic values
+ */
 public class MainActivity extends AppCompatActivity {
 
     //poker decks
     pokerDeck masterDeck;
     pokerDeck currentDeck;
 
-    // poker hands, indices are players
-   // ArrayList<pokerHand> handList;
-   // ArrayList<tableHand> tableHandList;
+    //poker hands, indices are players
+    //ArrayList<pokerHand> handList;
+    //ArrayList<tableHand> tableHandList;
     tableHand tablesHand;
 
     ArrayList<player> playerList;
     //number of players
     int numPlayers;
 
-    // Field to hold the roll result text
+    // Field to hold the result text
     TextView rollResult;
     TextView scoreText;
     TextView card1Text;
@@ -485,15 +557,8 @@ public class MainActivity extends AppCompatActivity {
     int scoreDelta = 0;
 
     // random instance
-    Random rand;
+    //Random rand;
 
-    // field to hold the vie value
-    int die1;
-    int die2;
-    int die3;
-
-    // list for dice
-    ArrayList<Integer> dice;
 
 
     // make array list for them
@@ -509,6 +574,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // defautl action button
+        // created by android studio
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -535,14 +601,10 @@ public class MainActivity extends AppCompatActivity {
         scoreText = (TextView)findViewById(R.id.scoreText);
 
         //initialize random instance
-        rand = new Random();
-
-        // create array list container for dice
-        dice = new ArrayList<Integer>();
+        //rand = new Random();
 
         ImageView card1Image = (ImageView)findViewById(R.id.card1Image);
         ImageView card2Image = (ImageView)findViewById(R.id.card2Image);
-        //ImageView die3Image = (ImageView)findViewById(R.id.die3Image);
 
         ImageView tableHand1Image = (ImageView)findViewById(R.id.tableHand1Image);
         ImageView tableHand2Image = (ImageView)findViewById(R.id.tableHand2Image);
@@ -553,7 +615,6 @@ public class MainActivity extends AppCompatActivity {
         cardImageViews = new ArrayList<ImageView>();
         cardImageViews.add(card1Image);
         cardImageViews.add(card2Image);
-        //diceImageViews.add(die3Image);
 
         // initialize table hand cards
         tableHandImageViews = new ArrayList<ImageView>();
@@ -566,10 +627,11 @@ public class MainActivity extends AppCompatActivity {
         // create greeting
         Toast.makeText(getApplicationContext(),"Welcome to Nail Poker!",Toast.LENGTH_SHORT).show();
 
-        /// poker stuff here
+        /// create deck here
         masterDeck=new pokerDeck();
         currentDeck=masterDeck;
 
+        // assign strings, get them by id given in xml
         card1Text = (TextView)findViewById(R.id.card1Text);
         card2Text = (TextView)findViewById(R.id.card2Text);
         tableHand1Text = (TextView)findViewById(R.id.tableHand1Text);
@@ -619,7 +681,6 @@ public class MainActivity extends AppCompatActivity {
     {
         // for each player, create a new hand
             tablesHand=new tableHand(currentDeck);
-          //  tableHandList.add(tmpHand);
 
 
     }
@@ -756,8 +817,12 @@ public class MainActivity extends AppCompatActivity {
         //pre flop
         displayHand(0);
 
-        // scoreText.setText(handList.get(0).toString());
+        /*
+            We aren't evaluatin the different phases seperately yet.
+            Eventually we will, but now focus on the river
+         */
 
+        // scoreText.setText(handList.get(0).toString());
       //  playerList.get(0).evaluateHand(tablesHand,0);
         //flop
         displayFlop();

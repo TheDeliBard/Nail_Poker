@@ -19,6 +19,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /*
+      Nail Poker
+      Goal: Hand analysis tool for texas hold em
+            Will allow custom table state, hand state, and simulated runs
+            to return appropriate valuations
+            
       basic class for a poker card
       value is 2-14 (14=ace, 13=king, 12=queen, 11=jack
       suit values are set as clubs==1, spades==2, hearts==3, diamonds==4
